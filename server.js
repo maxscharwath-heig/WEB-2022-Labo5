@@ -4,6 +4,8 @@ import sqlite3 from "sqlite3";
 const app = express();
 
 // Configure express
+app.set('view engine', 'pug');
+app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
 // Connect to the database
@@ -21,9 +23,12 @@ const db = new sqlite3.Database('dictons.sqlite', (err) => {
 app.get('/', (req, res) => {
   db.get('SELECT * FROM dictons ORDER BY RANDOM() LIMIT 1', (err, row) => {
     if(err) {
-      throw err;
+      return res.status(500).send('Internal server error');
     }
-    res.send(`<q>${row.dicton}</q>`);
+    if(!row) {
+      return res.status(404).send('Not found');
+    }
+    res.render('quote', { dicton: row.dicton });
   });
 });
 
@@ -34,14 +39,9 @@ app.get('/', (req, res) => {
 app.get('/list', (req, res) => {
   db.all('SELECT * FROM dictons ORDER BY id', (err, rows) => {
     if(err) {
-      throw err;
+      return res.status(500).send('Internal server error');
     }
-    let html = '<ul>';
-    rows.forEach((row) => {
-      html += `<li><a href="/${row.id}">${row.dicton}</a></li>`;
-    });
-    html += '</ul>';
-    res.send(html);
+    res.render('list', { rows });
   });
 });
 
@@ -49,12 +49,7 @@ app.get('/list', (req, res) => {
 // Displays a HTML form for creating new dictons with POST requests.
 // Example: <form method=POST><input type='text' name='dicton'></input><button>Nouveau dicton</button></form>
 app.get('/create', (req, res) => {
-  res.send(`
-  <form method=POST>
-    <input type='text' name='dicton'></input>
-    <button>Nouveau dicton</button>
-  </form>
-  `);
+  res.render('create');
 })
 
 // POST /create
@@ -63,7 +58,7 @@ app.get('/create', (req, res) => {
 app.post('/create', (req, res) => {
   db.run('INSERT INTO dictons (dicton) VALUES (?)', [req.body.dicton], (err) => {
     if(err) {
-      throw err;
+      return res.status(500).send('Internal server error');
     }
     res.redirect('/list');
   });
@@ -74,10 +69,12 @@ app.post('/create', (req, res) => {
 app.get('/:id', (req, res) => {
   db.get('SELECT * FROM dictons WHERE id = ?', [req.params.id], (err, row) => {
     if(err) {
-      throw err;
+      return res.status(500).send('Internal server error');
     }
-    console.log(row)
-    res.send(`<q>${row?.dicton}</q>`);
+    if(!row) {
+      return res.status(404).send('Not found');
+    }
+    res.render('quote', { dicton: row.dicton });
   });
 })
 

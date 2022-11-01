@@ -1,0 +1,7 @@
+extends layout.pug
+
+block content
+    ul
+        each item in rows
+            li
+                a(href=`/${item.id}`)= item.dicton

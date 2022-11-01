@@ -1,0 +1,27 @@
+doctype html
+html
+    head
+        title WEB LABO 5
+        style.
+            body {background-image: url(200w.gif); font-family: Comic Sans MS, cursive, sans-serif;cursor: url(cursor.svg) 0 0, auto;}
+            footer { margin: 35px 0 15px 0; text-align: center }
+            h1 { text-align: center; font-size: 70px;  color: #17ff10; }
+            .blink{animation: blinker 250ms linear infinite;}
+            @keyframes blinker {50% { opacity: 0; }}
+            .container { margin: 0 auto; width: 800px;  background-image: url(bg.gif);  color: #005972; padding: 20px; margin-bottom: 20px;  border: 10px groove  #005972; }
+            .container a { color: #001248; }
+            q{ display: block; font-size: 30px; color: #ee00ff; }
+            li,
+            q:hover { transform: scale(1.1) rotate(2deg); }
+
+    body
+        main#main
+        div.container
+            h1.blink DICTONARY
+            h2
+                a(href='/create') Create new dicton
+        div.container
+            block content
+        block footer
+            footer
+                p © #{new Date().getFullYear()} Maxime Scharwath
